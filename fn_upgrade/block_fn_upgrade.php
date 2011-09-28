@@ -63,7 +63,7 @@ class block_fn_upgrade extends block_list {
                     $assignmentmoduleid = get_field('modules', 'id', 'name', 'assignment');
                     $action = optional_param('value', '', PARAM_ALPHA);
                     if ($action == 'upgradefnassignment') {
-                        /** ********* if the following condition met then convert the current fnassignment in resource mod ************** */
+                        /**                         * ******** if the following condition met then convert the current fnassignment in resource mod ************** */
                         if (($fnassignment->var2 == 0) && ($fnassignment->var3 == 0) && ($fnassignment->var4 == 0)) {
                             //ACTION:I make a new entry in mdl_resource table 
                             $resource->course = $COURSE->id;
@@ -76,8 +76,8 @@ class block_fn_upgrade extends block_list {
                             if ($match) {
                                 $resource->reference = trim($fnassignment->description, '{,}');
                             } else {
-                                $resourcedescription = $fnassignment->description;
-                                $fname = time() . "." . "txt";
+                                $resourcedescription = addslashes($fnassignment->description);
+                                $fname = time() . "." . "html";
                                 $location = $CFG->dataroot . "/" . $COURSE->id;
                                 $resourcefilename = $location . "/" . $fname;
                                 $filehandle = fopen($resourcefilename, 'w');
@@ -91,7 +91,7 @@ class block_fn_upgrade extends block_list {
                             $resource->options = '';
                             $resource->timemodified = $fnassignment->timemodified;
                             $returnid = insert_record('resource', $resource);
-                            
+
                             //ACTION:II update the course_module table
                             $courseid = $COURSE->id;
                             $idfrommoduletable = get_field("course_modules", "id", "course", $courseid, "module", $fnmoduleid, "instance", $fnassignmentid);
@@ -99,7 +99,7 @@ class block_fn_upgrade extends block_list {
                             $updatemod->module = $rescmoduleid;
                             $updatemod->instance = $returnid;
                             $updateid = update_record('course_modules', $updatemod);
-                            
+
                             //ACTION:III update the grade item table
                             $entrymexist = record_exists('grade_items', 'itemmodule', 'fnassignment', 'iteminstance', $fnassignment->id);
                             if ($entrymexist) {
@@ -115,7 +115,7 @@ class block_fn_upgrade extends block_list {
                             if ($submissionwithoutuseridexist) {
                                 $deletefnsubmissionentry = delete_records('fnassignment_submissions ', 'id', $fnassignment->var5);
                             }
-                           //ACTION:IV delete the entry from fnassignment and its submission by user
+                            //ACTION:IV delete the entry from fnassignment and its submission by user
                             $submissionwithuserid = record_exists('fnassignment_submissions ', 'assignment', $fnassignment->id);
                             if ($submissionwithuserid) {
                                 delete_records('fnassignment_submissions ', 'assignment', $fnassignment->id);
@@ -125,16 +125,16 @@ class block_fn_upgrade extends block_list {
                                 $count1++;
                             }
                             rebuild_course_cache($COURSE->id);
-                        }/**case one end here*/
-                        /*******if the following condition met then convert the current fnassignment in online type of assignment********/
-                         ///case 2-make online assignment and update grade_items and course_module table
+                        }/*                         * case one end here */
+                        /*                         * *****if the following condition met then convert the current fnassignment in online type of assignment******* */
+                        ///case 2-make online assignment and update grade_items and course_module table
                         if ($fnassignment->var5 != Null && empty($fnassignment->var3) && !empty($fnassignment->var2)) {
 
                             //Action I-create a new entry in assignment table  
                             $assignment->course = $COURSE->id;
                             $assignment->name = $fnassignment->name;
-                            $assignment->description = trim($fnassignment->description, '{,}');
-                            $assignment->format = $fnassignment->format;
+                            $assignment->description = addslashes($fnassignment->description); //$fnassignment->description;
+                            $assignment->format = '0';
                             $assignment->assignmenttype = 'online';
                             $assignment->resubmit = $fnassignment->resubmit;
                             $assignment->preventlate = $fnassignment->preventlate;
@@ -149,18 +149,20 @@ class block_fn_upgrade extends block_list {
                             $assignment->timeavailable = $fnassignment->timeavailable;
                             $assignment->grade = $fnassignment->grade;
                             $assignment->timemodified = $fnassignment->timemodified;
+                            //print_object($assignment);die();
                             $insertedid = insert_record('assignment', $assignment);
 
-                             //Action II-update the course module table                            
+                            //Action II-update the course module table                            
                             $idincmtable = get_field('course_modules', 'id', 'course', $COURSE->id, 'module', $fnmoduleid, 'instance', $fnassignmentid);
                             $updaterecord->id = $idincmtable;
                             $updaterecord->module = $assignmentmoduleid;
                             $updaterecord->instance = $insertedid;
                             $updateid = update_record('course_modules', $updaterecord);
                             if ($insertedid && $updateid) {
-                                $count2++;
+                                $count2++;                               
                             }
-                            
+
+
                             //Action III-get all student and their all submission and restore them
                             $students = get_course_students($COURSE->id, $sort = 'id ASC');
                             if ($students) {
@@ -196,9 +198,9 @@ class block_fn_upgrade extends block_list {
                                     unset($recordexists);
                                 }
                             }
-                            
-                                //Action IV-Update the grade item table
-                             $entryexitwithitemistance = record_exists('grade_items', 'itemmodule', 'fnassignment', 'iteminstance', $fnassignment->id);
+
+                            //Action IV-Update the grade item table
+                            $entryexitwithitemistance = record_exists('grade_items', 'itemmodule', 'fnassignment', 'iteminstance', $fnassignment->id);
 
                             if ($entryexitwithitemistance) {
                                 $getgradeentry = get_record('grade_items', 'itemmodule', 'fnassignment', 'iteminstance', $fnassignment->id);
@@ -219,10 +221,10 @@ class block_fn_upgrade extends block_list {
                                 }
                             }
 
- //Action V-Delete the fn assignment and fnassignment submission entries 
+                            //Action V-Delete the fn assignment and fnassignment submission entries 
                             $submissionwithuserid = record_exists('fnassignment_submissions ', 'assignment', $fnassignment->id);
                             if ($submissionwithuserid) {
-                                 delete_records('fnassignment_submissions ', 'assignment', $fnassignment->id);
+                                delete_records('fnassignment_submissions ', 'assignment', $fnassignment->id);
 //                                
                             }
                             $submissionwithoutuseridexist = record_exists('fnassignment_submissions ', 'timecreated', $fnassignment->timemodified);
@@ -235,15 +237,15 @@ class block_fn_upgrade extends block_list {
 
                             rebuild_course_cache($COURSE->id);
                         }
-                        /**case 2 end here*/
-                        
-/***************Case-III make a upload type assignment based on condition ***********************/
-                        if ($fnassignment->var5 != Null && !empty($fnassignment->var3) && empty($fnassignment->var2)){
+                        /*                         * case 2 end here */
+
+                        /*                         * *************Case-III make a upload type assignment based on condition ********************** */
+                        if ($fnassignment->var5 != Null && !empty($fnassignment->var3) && empty($fnassignment->var2)) {
 
 //Action-I make a new entry in assignment table
                             $assignment->course = $fnassignment->course;
                             $assignment->name = $fnassignment->name;
-                            $assignment->description = trim($fnassignment->description, '{,}');
+                            $assignment->description = addslashes($fnassignment->description); //trim($fnassignment->description, '{,}');
                             $assignment->format = $fnassignment->format;
                             $assignment->assignmenttype = 'upload';
                             $assignment->resubmit = $fnassignment->resubmit;
@@ -267,12 +269,12 @@ class block_fn_upgrade extends block_list {
                             $updaterecord->module = $assignmentmoduleid;
                             $updaterecord->instance = $insertedid;
                             $updatecmtable = update_record('course_modules', $updaterecord);
-                                                    
+
                             if ($insertedid && $updatecmtable) {
                                 $count3++;
                             }
-      
- //Action III-get all student and their all submission and restore them
+
+                            //Action III-get all student and their all submission and restore them
                             $students = get_course_students($COURSE->id, $sort = 'id ASC');
                             if ($students) {
                                 foreach ($students as $student) {
@@ -309,27 +311,27 @@ class block_fn_upgrade extends block_list {
                                     unset($recordexists);
                                 }
                             }
- //Action IV-Delete the fn assignment and fnassignment submission entries 
+                            //Action IV-Delete the fn assignment and fnassignment submission entries 
                             $submissionwithuserid = record_exists('fnassignment_submissions ', 'assignment', $fnassignment->id);
                             if ($submissionwithuserid) {
-                                 delete_records('fnassignment_submissions ', 'assignment', $fnassignment->id);                              
+                                delete_records('fnassignment_submissions ', 'assignment', $fnassignment->id);
                             }
                             $submissionwithoutuseridexist = record_exists('fnassignment_submissions ', 'timecreated', $fnassignment->timemodified);
                             if ($submissionwithoutuseridexist) {
                                 $deletefnsubmissionentry = delete_records('fnassignment_submissions ', 'timecreated', $fnassignment->timemodified);
-                               
                             }
 
-                            $deletefnentry = delete_records('fnassignment', 'id', $fnassignment->id);                     rebuild_course_cache($COURSE->id);
+                            $deletefnentry = delete_records('fnassignment', 'id', $fnassignment->id);
+                            rebuild_course_cache($COURSE->id);
                         }
-                        /**case 3 end here**/
-                        /*****CASE:IV make a upload type assignment with note facility**************/
+                        /*                         * case 3 end here* */
+                        /*                         * ***CASE:IV make a upload type assignment with note facility************* */
                         if ($fnassignment->var5 != Null && $fnassignment->var3 > 0 && !empty($fnassignment->var2)) {
-                            
-//ACTION:I make a new entry in assignment table
+
+                            //ACTION:I make a new entry in assignment table
                             $assignment->course = $fnassignment->course;
                             $assignment->name = $fnassignment->name;
-                            $assignment->description = trim($fnassignment->description, '{,}');
+                            $assignment->description = addslashes($fnassignment->description); //trim($fnassignment->description, '{,}');
                             $assignment->format = $fnassignment->format;
                             $assignment->assignmenttype = 'upload';
                             $assignment->resubmit = $fnassignment->resubmit;
@@ -346,7 +348,7 @@ class block_fn_upgrade extends block_list {
                             $assignment->grade = $fnassignment->grade;
                             $assignment->timemodified = $fnassignment->timemodified;
                             $insertedid = insert_record('assignment', $assignment);
-                            
+
                             //ACTION:II update the course module table                                                    
                             $idincmtable = get_field('course_modules', 'id', 'course', $COURSE->id, 'module', $fnmoduleid, 'instance', $fnassignment->id);
                             $updaterecord->id = $idincmtable;
@@ -364,7 +366,7 @@ class block_fn_upgrade extends block_list {
                                     $studentid = $student->id;
                                     $recordexists = record_exists('fnassignment_submissions', 'assignment', $fnassignmentid, 'userid', $studentid);
                                     if ($recordexists) {
-                                                                                $studentsubmission = get_record('fnassignment_submissions', 'assignment', $fnassignmentid, 'userid', $studentid);
+                                        $studentsubmission = get_record('fnassignment_submissions', 'assignment', $fnassignmentid, 'userid', $studentid);
                                         $submittedass->assignment = $insertedid;
                                         $submittedass->userid = $student->id;
                                         $submittedass->timecreated = $studentsubmission->timecreated;
@@ -372,8 +374,8 @@ class block_fn_upgrade extends block_list {
                                         $submittedass->numfiles = $studentsubmission->numfiles;
                                         $data1 = unserialize($studentsubmission->data1);
                                         $submittedtext = $data1->content->text;
-                                        $submittedass->data1 = $submittedtext;                                     
-                                        $submittedass->data2 = 'submitted'; 
+                                        $submittedass->data1 = $submittedtext;
+                                        $submittedass->data2 = 'submitted';
                                         if ($studentsubmission->timemarked > 0) {
 
                                             $submittedass->grade = $studentsubmission->grade;
@@ -393,27 +395,26 @@ class block_fn_upgrade extends block_list {
                                         check_dir_exists($newarea, true, true);
                                         rename($oldarea, $newarea);
                                     }
-                                    
                                 }
                             }
                             //ACTION:IV delete entry from fnassignment and fnassignment_submission table 
-                                                        $submissionwithuserid = record_exists('fnassignment_submissions ', 'assignment', $fnassignment->id);
+                            $submissionwithuserid = record_exists('fnassignment_submissions ', 'assignment', $fnassignment->id);
                             if ($submissionwithuserid) {
                                 $a = delete_records('fnassignment_submissions ', 'assignment', $fnassignment->id);
 //                               
                             }
-                             $submissionwithoutuseridexist = record_exists('fnassignment_submissions ', 'timecreated', $fnassignment->timemodified);
+                            $submissionwithoutuseridexist = record_exists('fnassignment_submissions ', 'timecreated', $fnassignment->timemodified);
                             if ($submissionwithoutuseridexist) {
                                 $deletefnsubmissionentry = delete_records('fnassignment_submissions ', 'timecreated', $fnassignment->timemodified);
 //                               
                             }
 
-                            $deletefnentry = delete_records('fnassignment', 'id', $fnassignment->id); 
+                            $deletefnentry = delete_records('fnassignment', 'id', $fnassignment->id);
 
                             rebuild_course_cache($COURSE->id);
-                        }                        
-                        
-                        /**case 4 ends here**/
+                        }
+
+                        /*                         * case 4 ends here* */
                     }
                 }
                 if ($count1) {
@@ -438,17 +439,18 @@ class block_fn_upgrade extends block_list {
                 if ($count1 || $count2 || $count3 || $count4) {
                     redirect($CFG->wwwroot . '/course/view.php?id=' . $COURSE->id);
                 }
-            }
-            else{
+            } else {
                 $this->content->items[] = "No FN Assignments in this course";
                 $this->content->icons[] = "";
             }
         }
         return $this->content;
     }
-    
+
     function applicable_formats() {
         return array('course' => true);
     }
+
 }
+
 ?>
