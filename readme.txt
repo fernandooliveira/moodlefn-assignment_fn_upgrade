@@ -1,8 +1,10 @@
-Read me file for block fn_upgrade for moodle1.9 version
+Read me file for block fn_converter for moodle1.9 version
 
 Installation-
 ------------- 
-    1-place the folder fn_upgrade in moodle/blocks directory and after that
+    1.If you are downloading from the github.com using git://github.com/fernandooliveira/moodlefn-assignment_fn_upgrade.git
+    2.Rename the dwonloaded directory to fn_converter 
+    3-place the folder fn_converter in moodle/blocks directory and after that
     2-login as a admin and click the notification link
 
 Limitation-
