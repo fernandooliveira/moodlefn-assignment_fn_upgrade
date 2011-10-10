@@ -1,10 +1,3 @@
-This is readme file for the fn_upgrade block for moodle 1.9.x version
- 
-Step1:download from github.com https://github.com/fernandooliveira/moodlefn-assignment_fn_upgrade
-Step2:take the repo fn_upgrade inside the downloaded repo fromthe girhub.com
-step3:place the folder fn_upgrade  in the yourmoodle1.9.x/blocks
-step4:login as an admin on your browser and click notification
-
 Read me file for block fn_upgrade for moodle1.9 version
 
 Installation-
@@ -37,6 +30,3 @@ How to upgrade FN Assignment Activity on course -
     admin with a link  "Upgrade fn assignment" when the admin or teacher click on the link then the upgradation process begin and within few second
     msg 'how many fn assignment converted into resource' ,'how many fn assignment converted into online assignment' ,'how many fn assignment converted into advanced assignment' 'how many fn assignment converted into advanced assignment with note facility' 
     will be shown.
-
-
-

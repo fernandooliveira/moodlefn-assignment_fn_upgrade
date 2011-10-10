@@ -1,15 +1,30 @@
 <?php
 
 /**
- * fn upgrade block for upgrading 
- * the fnassignment that is custom assignemnt and 
+ * fn converter block for upgrading 
+ * the fnassignment that is custom assignemnt 
  * * */
-class block_fn_upgrade extends block_list {
+class block_fn_converter extends block_list {
 
     function init() {
-        $this->title = get_string('upgradefnassignment', 'block_fn_upgrade');
+        $this->title = get_string('titleofblock', 'block_fn_converter');
         $this->version = 2007101509;
     }
+    
+    function instance_allow_config() {
+        return true;
+    }
+    
+   function specialization() {
+
+        // load userdefined title and make sure it's never empty
+        if (empty($this->config->title)) {
+            $this->title = get_string('blockafnstitle','block_fn_converter');
+        } else {
+            $this->title = $this->config->title;
+        }
+    }
+
 
     function get_content() {
         global $CFG, $COURSE;
@@ -225,12 +240,12 @@ class block_fn_upgrade extends block_list {
                             $submissionwithuserid = record_exists('fnassignment_submissions ', 'assignment', $fnassignment->id);
                             if ($submissionwithuserid) {
                                 delete_records('fnassignment_submissions ', 'assignment', $fnassignment->id);
-//                                
+                              
                             }
                             $submissionwithoutuseridexist = record_exists('fnassignment_submissions ', 'timecreated', $fnassignment->timemodified);
                             if ($submissionwithoutuseridexist) {
                                 $deletefnsubmissionentry = delete_records('fnassignment_submissions ', 'timecreated', $fnassignment->timemodified);
-//                               
+                               
                             }
 
                             $deletefnentry = delete_records('fnassignment', 'id', $fnassignment->id);
