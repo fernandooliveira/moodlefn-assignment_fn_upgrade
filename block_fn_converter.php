@@ -83,25 +83,24 @@ class block_fn_converter extends block_list {
                             //ACTION:I make a new entry in mdl_resource table 
                             $resource->course = $COURSE->id;
                             $resource->name = $fnassignment->name;
-                            $resource->type = 'file';
+                           // $resource->type = 'file';
                             // check whether $fnassignment->name contain prefix {{ and suffix }} to differenciate between file /url or edit content text
                             $pattern = "/^{{(.)*}}$/";
                             $subject = $fnassignment->description;
                             $match = preg_match($pattern, $subject);
                             if ($match) {
-                                $resource->reference = trim($fnassignment->description, '{,}');
+                                 $resource->type = 'file';
+                                 $resource->reference = trim($fnassignment->description, '{,}');
+                                 $resource->summary = 'This is link to website';// added on dec 13
+                                 $resource->alltext = '';                       // added on dec 13
                             } else {
-                                $resourcedescription = addslashes($fnassignment->description);
-                                $fname = time() . "." . "html";
-                                $location = $CFG->dataroot . "/" . $COURSE->id;
-                                $resourcefilename = $location . "/" . $fname;
-                                $filehandle = fopen($resourcefilename, 'w');
-                                fwrite($filehandle, "$resourcedescription");
-                                fclose($filehandle);
-                                $resource->reference = $fname;
-                            }
-                            $resource->summary = 'This is link to website';
-                            $resource->alltext = '';
+                                // added on 13 dec 2011 to convert the read only assignment in web page
+                                $resource->type = 'html';
+                                $resource->reference = "";
+                                $resource->summary = addslashes($fnassignment->description);// added on dec 13
+                                $resource->alltext = addslashes($fnassignment->description);                      // added on dec 13 
+                                // added on 13 dec 2011                                
+                            }                            
                             $resource->popup = '';
                             $resource->options = '';
                             $resource->timemodified = $fnassignment->timemodified;
