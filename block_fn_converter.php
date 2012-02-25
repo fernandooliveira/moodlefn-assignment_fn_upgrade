@@ -19,7 +19,7 @@ class block_fn_converter extends block_list {
 
         // load userdefined title and make sure it's never empty
         if (empty($this->config->title)) {
-            $this->title = get_string('blockafnstitle','block_fn_converter');
+            $this->title = get_string('blockafnstitle', 'block_fn_converter');
         } else {
             $this->title = $this->config->title;
         }
@@ -68,9 +68,9 @@ class block_fn_converter extends block_list {
                 $count4 = 0;
                 $totalfnassignment = count($fnassignments);
                 foreach ($fnassignments as $fnassignment) {
-                    if (!$fnassignment->visible) {
-                        continue;
-                    }
+//                    if (!$fnassignment->visible) {
+//                        continue;
+//                    }
                     $fnassignment = get_record('fnassignment', 'id', $fnassignment->id);
                     $fnassignmentid = $fnassignment->id;
                     $rescmoduleid = get_field('modules', 'id', 'name', 'resource');
