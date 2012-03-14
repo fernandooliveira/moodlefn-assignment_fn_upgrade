@@ -148,7 +148,7 @@ class block_fn_converter extends block_list {
                             $assignment->course = $COURSE->id;
                             $assignment->name = $fnassignment->name;
                             $assignment->description = addslashes($fnassignment->description); //$fnassignment->description;
-                            $assignment->format = $fnassignment->format;
+                            $assignment->format = 1;//$fnassignment->format;
                             $assignment->assignmenttype = 'online';
                             $assignment->resubmit = $fnassignment->resubmit;
                             $assignment->preventlate = $fnassignment->preventlate;
