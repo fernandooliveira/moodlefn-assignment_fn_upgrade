@@ -68,9 +68,6 @@ class block_fn_converter extends block_list {
                 $count4 = 0;
                 $totalfnassignment = count($fnassignments);
                 foreach ($fnassignments as $fnassignment) {
-//                    if (!$fnassignment->visible) {
-//                        continue;
-//                    }
                     $fnassignment = get_record('fnassignment', 'id', $fnassignment->id);
                     $fnassignmentid = $fnassignment->id;
                     $rescmoduleid = get_field('modules', 'id', 'name', 'resource');
@@ -451,7 +448,7 @@ class block_fn_converter extends block_list {
                     }
                 }
                 if ($count1 || $count2 || $count3 || $count4) {
-                    redirect($CFG->wwwroot . '/course/view.php?id=' . $COURSE->id);
+                    redirect($CFG->wwwroot . '/course/view.php?id=' . $COURSE->id, '', '60');
                 }
             } else {
                 $this->content->items[] = "No FN Assignments in this course";
